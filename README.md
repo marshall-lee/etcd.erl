@@ -12,7 +12,7 @@ etcd:start()
 ```erlang
 {ok, Response} = etcd:set("http://localhost:4001", "/message", "Hello world", 400).
 ```
-``"/message"`` is the key and ``"Hello world"`` is the value. 400 is the timeout.
+``"/message"`` is the key and ``"Hello world"`` is the value. ``400`` is the timeout.
 ### get
 ```erlang
 {ok, Response} = etcd:get("http://localhost:4001", "/message", infinity).

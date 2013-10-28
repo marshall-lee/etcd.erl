@@ -37,7 +37,7 @@ etcd:delete("http://localhost:4001", "/message", infinity).
 ```erlang
 Result = etcd:watch("http://localhost:4001", "/foo", infinity),
 ```
-Watch for commands at index 42:
+Watch for commands at index ``42``:
 ```erlang
 Result = etcd:watch("http://localhost:4001", "/foo", 42, infinity),
 ```

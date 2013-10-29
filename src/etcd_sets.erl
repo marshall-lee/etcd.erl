@@ -37,7 +37,8 @@ add(Url, Key, Value, Timeout) ->
 add(Url, Key, Value, TTL, Timeout) ->
     {ok, Exists} = exists(Url, Key, Timeout),
     case Exists of
-        not_exists -> etcd:set(Url, get_head_key(Key), "1", Timeout)
+        not_exists -> etcd:set(Url, get_head_key(Key), "1", Timeout);
+        exists     -> ok
     end,
     MemberKey = io_lib:format("~s/~s", [Key, hash(Value)]),
     Result = etcd:set(Url, MemberKey, Value, TTL, Timeout),

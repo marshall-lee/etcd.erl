@@ -6,6 +6,7 @@
 -export([get/3]).
 -export([delete/3]).
 -export([watch/3, watch/4]).
+-export([sadd/4, sadd/5, sdel/4, sismember/4, smembers/3]).
 
 -include("include/etcd_types.hrl").
 
@@ -128,6 +129,21 @@ watch(Url, Key, Index, Timeout) ->
     FullUrl = url_prefix(Url) ++ "/watch" ++ convert_to_string(Key),
     Result = post_request(FullUrl, [{"index", Index}], Timeout),
     handle_request_result(Result).
+
+-spec sadd(url(), key(), value(), pos_timeout()) -> ok | {add_err, any()}.
+sadd(Url, Key, Value, Timeout) -> etcd_sets:add(Url, Key, Value, Timeout).
+
+-spec sadd(url(), key(), value(), pos_integer(), pos_timeout()) -> ok | {add_err, any()}.
+sadd(Url, Key, Value, TTL, Timeout) -> etcd_sets:add(Url, Key, Value, TTL, Timeout).
+
+-spec sdel(url(), key(), value(), pos_timeout()) -> ok | {del_err, any()}.
+sdel(Url, Key, Value, Timeout) -> etcd_sets:del(Url, Key, Value, Timeout).
+
+-spec sismember(url(), key(), value(), pos_timeout()) -> {ok, boolean()} | {ismember_err, any()}.
+sismember(Url, Key, Value, Timeout) -> etcd_sets:ismember(Url, Key, Value, Timeout).
+
+-spec smembers(url(), key(), pos_timeout()) -> {ok, [binary()]} | {members_err, any()}.
+smembers(Url, Key, Timeout) -> etcd_sets:members(Url, Key, Timeout).
 
 %% @private
 convert_to_string(Value) when is_integer(Value) ->

@@ -66,3 +66,33 @@ watch_index_test() ->
     Result2 = etcd:watch(?URL, "/dir", Index, infinity),
     ?assertEqual(Result1, Result2),
     etcd:delete(?URL, "/dir/file", infinity).
+
+sadd_test() ->
+    etcd:start(),
+    Result = etcd:sadd(?URL, "/numbers", "one", infinity),
+    ?assertMatch(ok, Result),
+    etcd:sdel(?URL, "/numbers", "one", infinity).
+
+sdel_test() ->
+    etcd:start(),
+    etcd:sadd(?URL, "/numbers", "one", infinity),
+    Result = etcd:sdel(?URL, "/numbers", "one", infinity),
+    ?assertMatch(ok, Result).
+
+sismember_test() ->
+    etcd:start(),
+    etcd:sadd(?URL, "/numbers", "one", infinity),
+    Result1 = etcd:sismember(?URL, "/numbers", "one", infinity),
+    ?assertMatch({ok, true}, Result1),
+    Result2 = etcd:sismember(?URL, "/numbers", "two", infinity),
+    ?assertMatch({ok, false}, Result2),
+    etcd:sdel(?URL, "/numbers", "one", infinity).
+
+smembers_test() ->
+    etcd:start(),
+    etcd:sadd(?URL, "/numbers", "one", infinity),
+    etcd:sadd(?URL, "/numbers", "two", infinity),
+    Result = etcd:smembers(?URL, "/numbers", infinity),
+    ?assertMatch({ok, [ <<"one">>, <<"two">> ]}, Result), %TODO: can it be [ <<"two">>, <<"one">> ] ?
+    etcd:sdel(?URL, "/numbers", "one", infinity),
+    etcd:sdel(?URL, "/numbers", "two", infinity).

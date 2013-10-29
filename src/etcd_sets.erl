@@ -9,9 +9,9 @@
 %%   Key = binary() | string()
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
-%%   Result = ok | {add_err, any()}
+%%   Result = ok | {error, any()}
 %% @end
--spec add(url(), key(), value(), pos_timeout()) -> ok | {add_err, any()}.
+-spec add(url(), key(), value(), pos_timeout()) -> ok | {error, any()}.
 add(Url, Key, Value, Timeout) ->
     {ok, Exists} = exists(Url, Key, Timeout),
     case Exists of
@@ -22,7 +22,7 @@ add(Url, Key, Value, Timeout) ->
     Result = etcd:set(Url, MemberKey, Value, Timeout),
     case Result of
         {ok, {set, _, _, _, _, _, _, _}} -> ok;
-        _                                -> {add_err, Result}
+        _                                -> {error, Result}
     end.
 
 %% @spec (Url, Key, Value, TTL, Timeout) -> Result
@@ -31,9 +31,9 @@ add(Url, Key, Value, Timeout) ->
 %%   Value = binary() | string()
 %%   TTL = pos_integer()
 %%   Timeout = pos_integer() | 'infinity'
-%%   Result = ok | {add_err, any()}
+%%   Result = ok | {error, any()}
 %% @end
--spec add(url(), key(), value(), pos_integer(), pos_timeout()) -> ok | {add_err, any()}.
+-spec add(url(), key(), value(), pos_integer(), pos_timeout()) -> ok | {error, any()}.
 add(Url, Key, Value, TTL, Timeout) ->
     {ok, Exists} = exists(Url, Key, Timeout),
     case Exists of
@@ -43,7 +43,7 @@ add(Url, Key, Value, TTL, Timeout) ->
     Result = etcd:set(Url, MemberKey, Value, TTL, Timeout),
     case Result of
         {ok, {set, _, _, _, _, _, _, _}} -> ok;
-        _                                -> {add_err, Result}
+        _                                -> {error, Result}
     end.
 
 %% @spec (Url, Key, Value, Timeout) -> Result
@@ -51,17 +51,17 @@ add(Url, Key, Value, TTL, Timeout) ->
 %%   Key = binary() | string()
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
-%%   Result = ok | {del_err, any()}
+%%   Result = ok | {error, any()}
 %% @end
--spec del(url(), key(), value(), pos_timeout()) -> ok | {del_err, any()}.
+-spec del(url(), key(), value(), pos_timeout()) -> ok | {error, any()}.
 del(Url, Key, Value, Timeout) ->
     {ok, exists} = exists(Url, Key, Timeout),
     MemberKey = io_lib:format("~s/~s", [Key, hash(Value)]),
     Result = etcd:delete(Url, MemberKey, Timeout),
     case Result of
         {ok, {delete, _, _, _}}  -> ok;
-        {ok, {error, 100, _, _}} -> {del_err, not_in_set};
-        _                        -> {del_err, Result}
+        {ok, {error, 100, _, _}} -> {error, not_in_set};
+        _                        -> {error, Result}
     end.
 
 %% @spec (Url, Key, Value, Timeout) -> Result
@@ -69,9 +69,9 @@ del(Url, Key, Value, Timeout) ->
 %%   Key = binary() | string()
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
-%%   Result = {ok, boolean()} | {ismember_err, any()}
+%%   Result = {ok, boolean()} | {error, any()}
 %% @end
--spec ismember(url(), key(), value(), pos_timeout()) -> {ok, boolean()} | {ismember_err, any()}.
+-spec ismember(url(), key(), value(), pos_timeout()) -> {ok, boolean()} | {error, any()}.
 ismember(Url, Key, Value, Timeout) ->
     {ok, exists} = exists(Url, Key, Timeout),
     MemberKey = io_lib:format("~s/~s", [Key, hash(Value)]),
@@ -79,8 +79,8 @@ ismember(Url, Key, Value, Timeout) ->
     case Result of
         {ok, {get, _, _, _, _}}               -> {ok, true};
         {ok, {error, 100, _, _}}              -> {ok, false};
-        {ok, Response} when is_list(Response) -> {ismember_err, directory};
-        _                                     -> {ismember_err, Result}
+        {ok, Response} when is_list(Response) -> {error, directory};
+        _                                     -> {error, Result}
     end.
 
 %% @spec (Url, Key, Value, Timeout) -> Result
@@ -88,9 +88,9 @@ ismember(Url, Key, Value, Timeout) ->
 %%   Key = binary() | string()
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
-%%   Result = {ok, [binary()]} | {members_err, any()}
+%%   Result = {ok, [binary()]} | {error, any()}
 %% @end
--spec members(url(), key(), pos_timeout()) -> {ok, [binary()]} | {members_err, any()}.
+-spec members(url(), key(), pos_timeout()) -> {ok, [binary()]} | {error, any()}.
 members(Url, Key, Timeout) ->
     {ok, exists} = exists(Url, Key, Timeout),
     HeadKey = get_head_key(Key),
@@ -100,9 +100,9 @@ members(Url, Key, Timeout) ->
             Response1 = lists:keydelete(list_to_binary(HeadKey), 2, Response),
             {ok, [ Value || {get, _, Value, _, _} <- Response1 ]};
         {ok, {get, _, _, _, _}} ->
-            {members_err, not_a_directory};
+            {error, not_a_directory};
         _ ->
-            {members_err, Result}
+            {error, Result}
     end.
 
 %% @private
@@ -121,13 +121,13 @@ get_head_key(Key) ->
     io_lib:format("~s/set-~s", [Key, hash(Key)]).
 
 %% @private
--spec exists(url(), key(), pos_timeout()) -> {ok, exists | not_exists} | {exists_err, any()}.
+-spec exists(url(), key(), pos_timeout()) -> {ok, exists | not_exists} | {error, any()}.
 exists(Url, Key, Timeout) ->
     Result = etcd:get(Url, get_head_key(Key), Timeout),
     case Result of
         {ok, {get, _, _, _, _}}                 -> {ok, exists};
         {ok, {error, 100, _, _}}                -> {ok, not_exists};
-        {ok, _Response} when is_list(_Response) -> {exists_err, directory};
-        _                                       -> {exists_err, Result}
+        {ok, _Response} when is_list(_Response) -> {error, directory};
+        _                                       -> {error, Result}
     end.
 

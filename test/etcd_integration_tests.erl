@@ -79,7 +79,7 @@ sdel_test() ->
     Result1 = etcd:sdel(?URL, "/numbers", "one", infinity),
     ?assertMatch(ok, Result1),
     Result2 = etcd:sdel(?URL, "/numbers", "one", infinity),
-    ?assertMatch({del_err, not_in_set}, Result2).
+    ?assertMatch({error, not_in_set}, Result2).
 
 sismember_test() ->
     etcd:start(),

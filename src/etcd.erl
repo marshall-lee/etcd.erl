@@ -130,19 +130,19 @@ watch(Url, Key, Index, Timeout) ->
     Result = post_request(FullUrl, [{"index", Index}], Timeout),
     handle_request_result(Result).
 
--spec sadd(url(), key(), value(), pos_timeout()) -> ok | {add_err, any()}.
+-spec sadd(url(), key(), value(), pos_timeout()) -> ok | {error, any()}.
 sadd(Url, Key, Value, Timeout) -> etcd_sets:add(Url, Key, Value, Timeout).
 
--spec sadd(url(), key(), value(), pos_integer(), pos_timeout()) -> ok | {add_err, any()}.
+-spec sadd(url(), key(), value(), pos_integer(), pos_timeout()) -> ok | {error, any()}.
 sadd(Url, Key, Value, TTL, Timeout) -> etcd_sets:add(Url, Key, Value, TTL, Timeout).
 
--spec sdel(url(), key(), value(), pos_timeout()) -> ok | {del_err, any()}.
+-spec sdel(url(), key(), value(), pos_timeout()) -> ok | {error, any()}.
 sdel(Url, Key, Value, Timeout) -> etcd_sets:del(Url, Key, Value, Timeout).
 
--spec sismember(url(), key(), value(), pos_timeout()) -> {ok, boolean()} | {ismember_err, any()}.
+-spec sismember(url(), key(), value(), pos_timeout()) -> {ok, boolean()} | {error, any()}.
 sismember(Url, Key, Value, Timeout) -> etcd_sets:ismember(Url, Key, Value, Timeout).
 
--spec smembers(url(), key(), pos_timeout()) -> {ok, [binary()]} | {members_err, any()}.
+-spec smembers(url(), key(), pos_timeout()) -> {ok, [binary()]} | {error, any()}.
 smembers(Url, Key, Timeout) -> etcd_sets:members(Url, Key, Timeout).
 
 %% @private

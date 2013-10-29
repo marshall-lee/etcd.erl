@@ -30,7 +30,7 @@ stop() ->
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
 %%   Result = {ok, response() | [response()]} | {http_error, atom()}.
-%%  @end
+%% @end
 -spec set(url(), key(), value(), pos_timeout()) -> result().
 set(Url, Key, Value, Timeout) ->
     FullUrl = url_prefix(Url) ++ "/keys" ++ convert_to_string(Key),
@@ -44,7 +44,7 @@ set(Url, Key, Value, Timeout) ->
 %%   TTL = pos_integer()
 %%   Timeout = pos_integer() | infinity
 %%   Result = {ok, response() | [response()]} | {http_error, atom()}.
-%%  @end
+%% @end
 -spec set(url(), key(), value(), pos_integer(), pos_timeout()) -> result().
 set(Url, Key, Value, TTL, Timeout) ->
     FullUrl = url_prefix(Url) ++ "/keys" ++ convert_to_string(Key),
@@ -58,7 +58,7 @@ set(Url, Key, Value, TTL, Timeout) ->
 %%   Value = binary() | string()
 %%   Timeout = pos_integer() | 'infinity'
 %%   Result = {ok, response() | [response()]} | {http_error, atom()}.
-%%  @end
+%% @end
 -spec test_and_set(url(), key(), value(), value(), pos_timeout()) -> result().
 test_and_set(Url, Key, PrevValue, Value, Timeout) ->
     FullUrl = url_prefix(Url) ++ "/keys" ++ convert_to_string(Key),
@@ -73,7 +73,7 @@ test_and_set(Url, Key, PrevValue, Value, Timeout) ->
 %%   TTL = pos_integer()
 %%   Timeout = pos_integer() | infinity
 %%   Result = {ok, response() | [response()]} | {http_error, atom()}.
-%%  @end
+%% @end
 -spec test_and_set(url(), key(), value(), value(), pos_integer(), pos_timeout()) -> result().
 test_and_set(Url, Key, PrevValue, Value, TTL, Timeout) ->
     FullUrl = url_prefix(Url) ++ "/keys" ++ convert_to_string(Key),

@@ -107,7 +107,7 @@ members(Url, Key, Timeout) ->
 %% @private
 -spec bin_to_hex(binary()) -> string().
 bin_to_hex(Binary) ->
-    [ hd(integer_to_list(Nibble, 16)) || << Nibble:4 >> <= Binary ].
+    string:to_lower([ hd(integer_to_list(Nibble, 16)) || << Nibble:4 >> <= Binary ]).
 
 %% @private
 -spec hash(binary() | string()) -> string().

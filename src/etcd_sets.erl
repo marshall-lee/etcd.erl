@@ -59,8 +59,9 @@ del(Url, Key, Value, Timeout) ->
     MemberKey = io_lib:format("~s/~s", [Key, hash(Value)]),
     Result = etcd:delete(Url, MemberKey, Timeout),
     case Result of
-        {ok, {delete, _, _, _}} -> ok;
-        _                       -> {del_err, Result}
+        {ok, {delete, _, _, _}}  -> ok;
+        {ok, {error, 100, _, _}} -> {del_err, not_in_set};
+        _                        -> {del_err, Result}
     end.
 
 %% @spec (Url, Key, Value, Timeout) -> Result
